@@ -14,9 +14,17 @@ from flask import (
     Flask, request, redirect, session, url_for,
     render_template, jsonify
 )
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
 import requests
+
+# Optional spotipy import — not needed in DEMO mode
+try:
+    import spotipy
+    from spotipy.oauth2 import SpotifyOAuth
+    SPOTIPY_AVAILABLE = True
+except ImportError:
+    SPOTIPY_AVAILABLE = False
+    spotipy = None
+    SpotifyOAuth = None
 
 load_dotenv()
 
@@ -280,7 +288,9 @@ def get_llm_provider() -> LLMProvider:
 
 # ─── Spotify Helpers ───────────────────────────────────────────────
 
-def get_spotify_oauth() -> SpotifyOAuth:
+def get_spotify_oauth():
+    if not SPOTIPY_AVAILABLE:
+        return None
     return SpotifyOAuth(
         client_id=SPOTIFY_CLIENT_ID,
         client_secret=SPOTIFY_CLIENT_SECRET,
@@ -291,7 +301,9 @@ def get_spotify_oauth() -> SpotifyOAuth:
     )
 
 
-def get_spotify() -> Optional[spotipy.Spotify]:
+def get_spotify():
+    if not SPOTIPY_AVAILABLE:
+        return None
     token_info = session.get("token_info")
     if not token_info:
         return None
@@ -355,7 +367,11 @@ def index():
 
 @app.route("/login")
 def login():
+    if DEMO_MODE:
+        return redirect(url_for("index"))
     sp_oauth = get_spotify_oauth()
+    if not sp_oauth:
+        return "Spotify not available", 503
     auth_url = sp_oauth.get_authorize_url()
     session["state"] = str(uuid.uuid4())
     return redirect(auth_url)
@@ -363,7 +379,11 @@ def login():
 
 @app.route("/callback")
 def callback():
+    if DEMO_MODE:
+        return redirect(url_for("index"))
     sp_oauth = get_spotify_oauth()
+    if not sp_oauth:
+        return "Spotify not available", 503
     code = request.args.get("code")
     error = request.args.get("error")
     if error:
