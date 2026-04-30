@@ -360,10 +360,10 @@ Uses Spotify's [`/recommendations`](https://developer.spotify.com/documentation/
 - [x] Multi-LLM provider support (MiMo, OpenRouter, Mock)
 - [x] Real-time chat UI with typing indicators
 - [x] AI analysis sidebar
-- [ ] 🎶 In-browser track previews (30s Spotify clips)
+- [x] 🎶 In-browser track previews (30s Spotify clips)
 - [ ] 📜 Conversation history & playlist archive
 - [ ] 🎯 Mood-based playlist covers (AI-generated images)
-- [ ] 🌐 Deploy to Vercel / Railway / Render
+- [x] 🌐 Deploy to Render / Railway
 - [ ] 📱 PWA support for mobile app-like experience
 - [ ] 🔗 Share generated playlists via unique URLs
 
@@ -386,6 +386,112 @@ Contributions are welcome! Whether it's bug fixes, new features, or documentatio
 - Create a "Vibe Roulette" random playlist feature
 - Build a Discord/Telegram bot version
 - Add multilingual support (Chinese, Japanese, Indonesian, etc.)
+
+---
+
+## 🚀 Deployment
+
+Deploy MuseAI to the cloud for free using **Render**.
+
+### Option 1: Deploy to Render (Recommended)
+
+Render offers a **free tier** for Python web services with automatic HTTPS.
+
+#### Step 1: Prepare Your Repo
+
+Your repo should already contain:
+- `requirements.txt` ✅
+- `Procfile` ✅
+- `render.yaml` (optional, for infrastructure-as-code) ✅
+
+#### Step 2: Update Spotify Redirect URI
+
+Before deploying, update your Spotify App's redirect URI:
+
+1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+2. Open your MuseAI app
+3. Click **"Edit Settings"**
+4. Add this Redirect URI:
+   ```
+   https://muse-ai.onrender.com/callback
+   ```
+5. Click **"Save"**
+
+> ⚠️ **Important:** The redirect URI must match exactly — including `https` and trailing slashes.
+
+#### Step 3: Create Render Account
+
+1. Go to [render.com](https://render.com) and sign up (free)
+2. Connect your GitHub account
+
+#### Step 4: Deploy
+
+**Option A: One-Click Deploy (Blueprints)**
+
+If you have `render.yaml` in your repo:
+
+1. In Render dashboard, click **"Blueprints"**
+2. Connect your GitHub repo
+3. Render will auto-detect `render.yaml` and configure everything
+4. Click **"Apply"**
+
+**Option B: Manual Web Service**
+
+1. Click **"New +"** → **"Web Service"**
+2. Connect your `muse-ai` GitHub repo
+3. Configure:
+   | Setting | Value |
+   |---------|-------|
+   | **Name** | `muse-ai` |
+   | **Runtime** | `Python 3` |
+   | **Build Command** | `pip install -r requirements.txt` |
+   | **Start Command** | `gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 60 app:app` |
+   | **Plan** | `Free` |
+
+4. Add **Environment Variables**:
+
+   | Key | Value |
+   |-----|-------|
+   | `SPOTIFY_CLIENT_ID` | (from Spotify Dashboard) |
+   | `SPOTIFY_CLIENT_SECRET` | (from Spotify Dashboard) |
+   | `SPOTIFY_REDIRECT_URI` | `https://muse-ai.onrender.com/callback` |
+   | `FLASK_SECRET_KEY` | (random 32+ char string) |
+   | `FLASK_DEBUG` | `false` |
+   | `LLM_PROVIDER` | `mock` (or `openrouter` / `mimoo`) |
+
+5. Click **"Create Web Service"**
+6. Wait for build (~2-3 minutes)
+7. Your app will be live at: `https://muse-ai.onrender.com`
+
+#### Step 5: Verify
+
+1. Open your deployed URL
+2. Click **"Connect with Spotify"**
+3. Try generating a playlist!
+
+> 💡 **Free Tier Limitations:** Render free tier spins down after 15 min of inactivity. First request after idle may take 30-60 seconds to wake up.
+
+---
+
+### Option 2: Deploy to Railway
+
+Railway also offers generous free tiers.
+
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Login
+railway login
+
+# Init project
+railway init
+
+# Deploy
+railway up
+```
+
+Set environment variables in Railway dashboard.
 
 ---
 

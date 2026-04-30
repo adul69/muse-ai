@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: muse-ai
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 60 app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: FLASK_DEBUG
+        value: false
+      - key: SPOTIFY_REDIRECT_URI
+        value: https://muse-ai.onrender.com/callback
+      - key: LLM_PROVIDER
+        value: mock
+      - key: SPOTIFY_CLIENT_ID
+        sync: false
+      - key: SPOTIFY_CLIENT_SECRET
+        sync: false
