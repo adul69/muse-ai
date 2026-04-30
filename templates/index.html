@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MuseAI — AI Music Recommendation Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo">🎵</div>
+                <span class="brand-name">MuseAI</span>
+            </div>
+            <nav class="nav">
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>Chat</span>
+                </a>
+                <a href="https://github.com/muse-ai-playlist" target="_blank" class="nav-item">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                {% if user %}
+                    <div class="user-mini">
+                        <img src="{{ user.images[0].url if user.images else 'https://via.placeholder.com/32' }}" alt="avatar" class="avatar">
+                        <div>
+                            <div class="user-name">{{ user.display_name or user.id }}</div>
+                            <a href="/logout" class="logout-link">Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="/login" class="btn btn-spotify btn-full">
+                        <i class="fab fa-spotify"></i> Connect Spotify
+                    </a>
+                {% endif %}
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            {% if not user %}
+                <!-- Landing State -->
+                <div class="landing">
+                    <div class="landing-content">
+                        <div class="landing-icon">🎧</div>
+                        <h1>Your Personal AI Music Curator</h1>
+                        <p>Describe your mood, vibe, or what you're feeling — and let AI craft the perfect Spotify playlist for you.</p>
+                        <a href="/login" class="btn btn-large btn-spotify">
+                            <i class="fab fa-spotify"></i> Connect with Spotify
+                        </a>
+                        <p class="small-text">Powered by LLM + Spotify Web API</p>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Chat Interface -->
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <div>
+                            <h2><i class="fas fa-robot"></i> MuseAI Chat</h2>
+                            <span class="provider-badge">{{ provider|upper }}</span>
+                        </div>
+                        <a href="/logout" class="btn btn-small btn-ghost">Logout</a>
+                    </div>
+
+                    <div id="chatMessages" class="chat-messages">
+                        <!-- Welcome Message -->
+                        <div class="message bot-message">
+                            <div class="message-avatar">🎵</div>
+                            <div class="message-bubble">
+                                <div class="message-text">
+                                    Hey <strong>{{ user.display_name or user.id }}</strong>! 👋<br><br>
+                                    I'm MuseAI, your personal music curator. Tell me how you're feeling or what vibe you want, and I'll generate a Spotify playlist just for you.<br><br>
+                                    <strong>Examples:</strong>
+                                    <ul class="examples">
+                                        <li>"I just broke up, want something like Coldplay but more depressing"</li>
+                                        <li>"Coding session, need deep focus with no vocals"</li>
+                                        <li>"Friday night party vibes, something to dance to"</li>
+                                        <li>"Rainy day, cozy lo-fi for reading"</li>
+                                    </ul>
+                                </div>
+                                <div class="message-time">Now</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="chat-input-area">
+                        <form id="chatForm" class="chat-form">
+                            <div class="input-wrapper">
+                                <input
+                                    type="text"
+                                    id="messageInput"
+                                    placeholder="Describe your mood or vibe..."
+                                    autocomplete="off"
+                                    required
+                                >
+                                <button type="submit" class="send-btn" id="sendBtn">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Result Panel -->
+                <div id="resultPanel" class="result-panel hidden">
+                    <div class="result-header">
+                        <h3><i class="fas fa-sparkles"></i> AI Analysis</h3>
+                        <button id="closeResult" class="btn btn-icon"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div id="resultContent" class="result-content"></div>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
