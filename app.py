@@ -20,7 +20,9 @@ import requests
 
 load_dotenv()
 
-app = Flask(__name__)
+# Ensure template folder is absolute path (for WSGI compatibility)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"))
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-key")
 
 # ─── Config ────────────────────────────────────────────────────────
