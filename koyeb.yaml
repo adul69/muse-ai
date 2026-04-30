@@ -1,0 +1,22 @@
+name: muse-ai
+service:
+  type: web
+  env: python
+  ports:
+    - port: 5000
+      protocol: http
+      routes:
+        - path: /
+  env_vars:
+    - name: DEMO_MODE
+      value: "true"
+    - name: SECRET_KEY
+      value: "demo-secret-key-12345"
+    - name: SESSION_TYPE
+      value: "filesystem"
+    - name: PYTHONUNBUFFERED
+      value: "true"
+  build:
+    command: pip install -r requirements.txt
+  run:
+    command: gunicorn --bind 0.0.0.0:5000 app:app
