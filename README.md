@@ -45,6 +45,7 @@
 | 🎨 **Modern Dark UI** | Clean, responsive chat interface with real-time typing indicators |
 | 🔄 **Multi-Provider LLM** | Switch between MiMo, OpenRouter, or mock mode via env config |
 | 📊 **AI Analysis Sidebar** | See exactly how the AI interpreted your request |
+| 🎶 **30s Track Previews** | Listen to song previews directly in the browser before opening Spotify |
 | 🔗 **Direct Track Links** | Every track links directly to Spotify |
 | 📱 **Responsive Design** | Works seamlessly on desktop and mobile |
 

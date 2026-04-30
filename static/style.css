@@ -681,6 +681,85 @@ body {
     transform: scale(1.1);
 }
 
+/* ─── Track Preview ────────────────────────────────────── */
+.track-card {
+    position: relative;
+}
+
+.track-card.playing {
+    border: 1px solid var(--accent-glow);
+    background: rgba(29, 185, 84, 0.08);
+}
+
+.track-img-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.track-preview-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.5);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.track-card:hover .track-preview-overlay {
+    opacity: 1;
+}
+
+.track-preview-overlay.playing {
+    opacity: 1;
+    background: rgba(29, 185, 84, 0.8);
+}
+
+.track-preview-overlay:hover {
+    background: rgba(29, 185, 84, 0.7);
+}
+
+.preview-hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+    margin-left: 0.5rem;
+}
+
+.preview-progress {
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 1px;
+    margin-top: 0.4rem;
+    overflow: hidden;
+}
+
+.preview-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    border-radius: 1px;
+    transition: width 0.1s linear;
+}
+
+.no-preview {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+    display: block;
+}
+
 /* ─── Error Message ────────────────────────────────────── */
 .error-bubble {
     background: rgba(255,71,87,0.15) !important;

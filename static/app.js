@@ -12,6 +12,8 @@ const resultContent = document.getElementById('resultContent');
 const closeResult = document.getElementById('closeResult');
 
 let isProcessing = false;
+let currentAudio = null;
+let currentPlayingId = null;
 
 // ─── Helpers ────────────────────────────────────────────
 
@@ -98,6 +100,79 @@ function addErrorMessage(text) {
     scrollToBottom();
 }
 
+// ─── Audio Preview ──────────────────────────────────────
+
+function stopPreview() {
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio = null;
+    }
+    if (currentPlayingId) {
+        const btn = document.querySelector(`[data-track-id="${currentPlayingId}"] .track-preview-btn`);
+        const card = document.querySelector(`[data-track-id="${currentPlayingId}"]`);
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-play"></i>';
+            btn.classList.remove('playing');
+        }
+        if (card) card.classList.remove('playing');
+        currentPlayingId = null;
+    }
+}
+
+function playPreview(url, trackId) {
+    // If clicking same track, toggle pause
+    if (currentPlayingId === trackId && currentAudio) {
+        if (!currentAudio.paused) {
+            currentAudio.pause();
+            const btn = document.querySelector(`[data-track-id="${trackId}"] .track-preview-btn`);
+            const card = document.querySelector(`[data-track-id="${trackId}"]`);
+            if (btn) {
+                btn.innerHTML = '<i class="fas fa-play"></i>';
+                btn.classList.remove('playing');
+            }
+            if (card) card.classList.remove('playing');
+            return;
+        }
+    }
+
+    // Stop any currently playing track
+    stopPreview();
+
+    // Start new preview
+    currentAudio = new Audio(url);
+    currentAudio.volume = 0.7;
+    currentPlayingId = trackId;
+
+    const btn = document.querySelector(`[data-track-id="${trackId}"] .track-preview-btn`);
+    const card = document.querySelector(`[data-track-id="${trackId}"]`);
+    const progressBar = document.querySelector(`[data-track-id="${trackId}"] .preview-progress-bar`);
+
+    if (btn) {
+        btn.innerHTML = '<i class="fas fa-pause"></i>';
+        btn.classList.add('playing');
+    }
+    if (card) card.classList.add('playing');
+
+    // Update progress bar
+    currentAudio.addEventListener('timeupdate', () => {
+        if (progressBar && currentAudio.duration) {
+            const pct = (currentAudio.currentTime / currentAudio.duration) * 100;
+            progressBar.style.width = `${pct}%`;
+        }
+    });
+
+    // When finished, reset
+    currentAudio.addEventListener('ended', () => {
+        stopPreview();
+    });
+
+    currentAudio.play().catch(err => {
+        console.warn('Preview playback failed:', err);
+        stopPreview();
+    });
+}
+
 // ─── Result Panel Renderer ──────────────────────────────
 
 function renderResult(data) {
@@ -139,16 +214,28 @@ function renderResult(data) {
 
     const tracksHtml = `
         <div class="tracks-section">
-            <h4>Tracks</h4>
-            ${tracks.map(t => `
-                <div class="track-card">
-                    <img src="${t.image || 'https://via.placeholder.com/44'}" alt="${escapeHtml(t.name)}" class="track-img">
+            <h4>Tracks <span class="preview-hint">▶ Click play to preview (30s)</span></h4>
+            ${tracks.map((t, idx) => `
+                <div class="track-card" data-track-id="track-${idx}">
+                    <div class="track-img-wrapper">
+                        <img src="${t.image || 'https://via.placeholder.com/44'}" alt="${escapeHtml(t.name)}" class="track-img">
+                        ${t.preview_url ? `
+                            <button class="track-preview-overlay" onclick="playPreview('${t.preview_url}', 'track-${idx}')">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        ` : ''}
+                    </div>
                     <div class="track-meta">
                         <div class="track-title">${escapeHtml(t.name)}</div>
                         <div class="track-artist">${escapeHtml(t.artists)}</div>
+                        ${t.preview_url ? `
+                            <div class="preview-progress">
+                                <div class="preview-progress-bar"></div>
+                            </div>
+                        ` : '<span class="no-preview">No preview available</span>'}
                     </div>
                     <a href="${t.spotify_url}" target="_blank" class="track-play" title="Open in Spotify">
-                        <i class="fas fa-play"></i>
+                        <i class="fab fa-spotify"></i>
                     </a>
                 </div>
             `).join('')}
