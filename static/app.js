@@ -330,3 +330,202 @@ document.addEventListener('click', (e) => {
 if (messageInput) {
     messageInput.focus();
 }
+
+// ─── Demo Mode Entry ────────────────────────────────────
+
+function enterDemoMode() {
+    // Hide landing, show chat UI
+    const landing = document.querySelector('.landing');
+    if (landing) {
+        landing.style.display = 'none';
+    }
+    
+    // Create and show chat container
+    const main = document.querySelector('.main');
+    const chatHtml = `
+        <div class="chat-container">
+            <div class="chat-header">
+                <div>
+                    <h2><i class="fas fa-robot"></i> MuseAI Chat</h2>
+                    <span class="provider-badge demo">DEMO</span>
+                </div>
+            </div>
+            <div id="chatMessages" class="chat-messages">
+                <div class="message bot-message">
+                    <div class="message-avatar">🎵</div>
+                    <div class="message-bubble">
+                        <div class="message-text">
+                            <strong>Welcome to MuseAI Demo! 👋</strong><br><br>
+                            This is a demo version — no Spotify login required.<br><br>
+                            <strong>Examples:</strong>
+                            <ul class="examples">
+                                <li>"I just broke up, want something like Coldplay but more depressing"</li>
+                                <li>"Coding session, need deep focus with no vocals"</li>
+                                <li>"Friday night party vibes, something to dance to"</li>
+                                <li>"Rainy day, cozy lo-fi for reading"</li>
+                            </ul>
+                        </div>
+                        <div class="message-time">Now</div>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <form id="chatForm" class="chat-form">
+                    <div class="input-wrapper">
+                        <input type="text" id="messageInput" placeholder="Describe your mood or vibe..." autocomplete="off" required>
+                        <button type="submit" class="send-btn" id="sendBtn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="resultPanel" class="result-panel hidden">
+            <div class="result-header">
+                <h3><i class="fas fa-sparkles"></i> AI Analysis</h3>
+                <button id="closeResult" class="btn btn-icon"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="resultContent" class="result-content"></div>
+        </div>
+    `;
+    main.innerHTML = chatHtml;
+    
+    // Re-bind events to new elements
+    const newChatForm = document.getElementById('chatForm');
+    const newMessageInput = document.getElementById('messageInput');
+    const newSendBtn = document.getElementById('sendBtn');
+    const newCloseResult = document.getElementById('closeResult');
+    
+    if (newChatForm) {
+        newChatForm.addEventListener('submit', handleDemoSubmit);
+    }
+    if (newCloseResult) {
+        newCloseResult.addEventListener('click', () => {
+            document.getElementById('resultPanel').classList.add('hidden');
+        });
+    }
+    if (newMessageInput) {
+        newMessageInput.focus();
+    }
+}
+
+// ─── Demo Submit Handler ────────────────────────────────
+
+async function handleDemoSubmit(e) {
+    e.preventDefault();
+    if (isProcessing) return;
+
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const chatMessages = document.getElementById('chatMessages');
+    
+    const message = messageInput.value.trim();
+    if (!message) return;
+
+    isProcessing = true;
+    messageInput.value = '';
+    messageInput.disabled = true;
+    sendBtn.disabled = true;
+
+    // Add user message
+    const userHtml = `
+        <div class="message user-message">
+            <div class="message-avatar">👤</div>
+            <div class="message-bubble">
+                <div class="message-text">${escapeHtml(message)}</div>
+                <div class="message-time">${getTimestamp()}</div>
+            </div>
+        </div>
+    `;
+    chatMessages.insertAdjacentHTML('beforeend', userHtml);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Add typing
+    const typingId = 'typing-' + Date.now();
+    const typingHtml = `
+        <div id="${typingId}" class="message bot-message">
+            <div class="message-avatar">🎵</div>
+            <div class="message-bubble">
+                <div class="typing">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    chatMessages.insertAdjacentHTML('beforeend', typingHtml);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    try {
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message }),
+        });
+
+        const el = document.getElementById(typingId);
+        if (el) el.remove();
+
+        const data = await response.json();
+
+        if (!response.ok || data.error) {
+            const errHtml = `
+                <div class="message bot-message">
+                    <div class="message-avatar">⚠️</div>
+                    <div class="message-bubble error-bubble">
+                        <div class="message-text">${escapeHtml(data.error || 'Something went wrong')}</div>
+                        <div class="message-time">${getTimestamp()}</div>
+                    </div>
+                </div>
+            `;
+            chatMessages.insertAdjacentHTML('beforeend', errHtml);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return;
+        }
+
+        // Success
+        const mood = data.llm_analysis?.mood || 'Custom';
+        const reasoning = data.llm_analysis?.reasoning || '';
+        const botHtml = `
+            <div class="message bot-message">
+                <div class="message-avatar">🎵</div>
+                <div class="message-bubble">
+                    <div class="message-text">
+                        <strong>Playlist generated!</strong> 🎉<br>
+                        Detected mood: <strong>${escapeHtml(mood)}</strong><br>
+                        ${escapeHtml(reasoning.substring(0, 120))}${reasoning.length > 120 ? '...' : ''}<br><br>
+                        ${data.demo ? '<span style="color: var(--accent);">🚀 Demo Mode — Check the sidebar for track samples!</span>' : 'Check the sidebar for details and the playlist link!'}
+                    </div>
+                    <div class="message-time">${getTimestamp()}</div>
+                </div>
+            </div>
+        `;
+        chatMessages.insertAdjacentHTML('beforeend', botHtml);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Render result
+        renderResult(data);
+
+    } catch (err) {
+        const el = document.getElementById(typingId);
+        if (el) el.remove();
+        
+        const errHtml = `
+            <div class="message bot-message">
+                <div class="message-avatar">⚠️</div>
+                <div class="message-bubble error-bubble">
+                    <div class="message-text">Network error. Please try again.</div>
+                    <div class="message-time">${getTimestamp()}</div>
+                </div>
+            </div>
+        `;
+        chatMessages.insertAdjacentHTML('beforeend', errHtml);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    } finally {
+        isProcessing = false;
+        messageInput.disabled = false;
+        sendBtn.disabled = false;
+        messageInput.focus();
+    }
+}

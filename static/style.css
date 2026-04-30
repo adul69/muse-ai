@@ -770,6 +770,67 @@ body {
     color: #ff6b6b;
 }
 
+/* ─── Demo Mode Styles ─────────────────────────────────── */
+.demo-landing {
+    position: relative;
+}
+
+.demo-badge {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background: linear-gradient(135deg, #ff6b6b, #feca57);
+    color: #000;
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 0.5rem 1rem;
+    border-radius: 500px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4); }
+    50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(255, 107, 107, 0); }
+}
+
+.btn-demo {
+    background: linear-gradient(90deg, #ff6b6b, #feca57);
+    color: #000;
+    font-weight: 700;
+}
+
+.btn-demo:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(255, 107, 107, 0.3);
+}
+
+.demo-note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 1.5rem;
+    max-width: 450px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.demo-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.demo-link:hover {
+    text-decoration: underline;
+}
+
+.provider-badge.demo {
+    background: linear-gradient(90deg, #ff6b6b, #feca57);
+    color: #000;
+}
+
 /* ─── Utilities ────────────────────────────────────────── */
 .hidden { display: none !important; }
 

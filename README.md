@@ -391,7 +391,16 @@ Contributions are welcome! Whether it's bug fixes, new features, or documentatio
 
 ## 🚀 Deployment
 
-Deploy MuseAI to the cloud for free using **Render**.
+Deploy MuseAI to the cloud for free using **Render** — **no Spotify Developer account required!**
+
+> 🎉 **Demo Mode** allows you to run MuseAI without any Spotify API credentials. Perfect for showcasing the AI/LLM capabilities without dealing with Spotify's developer restrictions.
+
+### Quick Start: Demo Mode (No Spotify Required)
+
+1. Fork or clone this repo
+2. Set environment variable: `DEMO_MODE=true`
+3. Deploy to Render (see below)
+4. Done! Anyone can try the AI music curator without logging in.
 
 ### Option 1: Deploy to Render (Recommended)
 
@@ -399,46 +408,30 @@ Render offers a **free tier** for Python web services with automatic HTTPS.
 
 #### Step 1: Prepare Your Repo
 
-Your repo should already contain:
+Your repo already contains:
 - `requirements.txt` ✅
 - `Procfile` ✅
-- `render.yaml` (optional, for infrastructure-as-code) ✅
+- `render.yaml` (Blueprints config) ✅
 
-#### Step 2: Update Spotify Redirect URI
-
-Before deploying, update your Spotify App's redirect URI:
-
-1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
-2. Open your MuseAI app
-3. Click **"Edit Settings"**
-4. Add this Redirect URI:
-   ```
-   https://muse-ai.onrender.com/callback
-   ```
-5. Click **"Save"**
-
-> ⚠️ **Important:** The redirect URI must match exactly — including `https` and trailing slashes.
-
-#### Step 3: Create Render Account
+#### Step 2: Deploy (One-Click Blueprint)
 
 1. Go to [render.com](https://render.com) and sign up (free)
 2. Connect your GitHub account
+3. In Render dashboard, click **"Blueprints"**
+4. Connect your GitHub repo (`adul69/muse-ai`)
+5. Render auto-detects `render.yaml` with `DEMO_MODE=true`
+6. Click **"Apply"**
+7. Wait for build (~2-3 minutes)
+8. Your app is live at: `https://muse-ai.onrender.com` 🎉
 
-#### Step 4: Deploy
+> 💡 **That's it!** No Spotify setup needed. The app runs in Demo Mode with curated mock tracks.
 
-**Option A: One-Click Deploy (Blueprints)**
+#### Manual Web Service (Alternative)
 
-If you have `render.yaml` in your repo:
-
-1. In Render dashboard, click **"Blueprints"**
-2. Connect your GitHub repo
-3. Render will auto-detect `render.yaml` and configure everything
-4. Click **"Apply"**
-
-**Option B: Manual Web Service**
+If you prefer manual setup:
 
 1. Click **"New +"** → **"Web Service"**
-2. Connect your `muse-ai` GitHub repo
+2. Connect your `muse-ai` repo
 3. Configure:
    | Setting | Value |
    |---------|-------|
@@ -452,30 +445,22 @@ If you have `render.yaml` in your repo:
 
    | Key | Value |
    |-----|-------|
-   | `SPOTIFY_CLIENT_ID` | (from Spotify Dashboard) |
-   | `SPOTIFY_CLIENT_SECRET` | (from Spotify Dashboard) |
-   | `SPOTIFY_REDIRECT_URI` | `https://muse-ai.onrender.com/callback` |
+   | `DEMO_MODE` | `true` |
    | `FLASK_SECRET_KEY` | (random 32+ char string) |
    | `FLASK_DEBUG` | `false` |
-   | `LLM_PROVIDER` | `mock` (or `openrouter` / `mimoo`) |
+   | `LLM_PROVIDER` | `mock` |
 
 5. Click **"Create Web Service"**
-6. Wait for build (~2-3 minutes)
-7. Your app will be live at: `https://muse-ai.onrender.com`
 
-#### Step 5: Verify
+#### Free Tier Limitations
 
-1. Open your deployed URL
-2. Click **"Connect with Spotify"**
-3. Try generating a playlist!
-
-> 💡 **Free Tier Limitations:** Render free tier spins down after 15 min of inactivity. First request after idle may take 30-60 seconds to wake up.
+- Render free tier spins down after 15 min of inactivity
+- First request after idle may take 30-60 seconds to wake up
+- This is normal for free hosting
 
 ---
 
 ### Option 2: Deploy to Railway
-
-Railway also offers generous free tiers.
 
 ```bash
 # Install Railway CLI
@@ -487,11 +472,23 @@ railway login
 # Init project
 railway init
 
+# Set env vars
+railway variables set DEMO_MODE=true LLM_PROVIDER=mock
+
 # Deploy
 railway up
 ```
 
-Set environment variables in Railway dashboard.
+---
+
+### Option 3: Full Spotify Integration Mode
+
+Want the real Spotify playlist creation? You'll need:
+1. Spotify Developer account + app (note: Spotify recently restricted new developer access)
+2. Set `DEMO_MODE=false`
+3. Add `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`
+
+See [`.env.example`](.env.example) for full configuration.
 
 ---
 

@@ -45,8 +45,8 @@
 
         <!-- Main Content -->
         <main class="main">
-            {% if not user %}
-                <!-- Landing State -->
+            {% if not user and not DEMO_MODE %}
+                <!-- Landing State (Spotify Mode) -->
                 <div class="landing">
                     <div class="landing-content">
                         <div class="landing-icon">🎧</div>
@@ -56,6 +56,25 @@
                             <i class="fab fa-spotify"></i> Connect with Spotify
                         </a>
                         <p class="small-text">Powered by LLM + Spotify Web API</p>
+                    </div>
+                </div>
+            {% elif DEMO_MODE %}
+                <!-- Demo Landing State -->
+                <div class="landing demo-landing">
+                    <div class="demo-badge">🚀 DEMO MODE</div>
+                    <div class="landing-content">
+                        <div class="landing-icon">🎧</div>
+                        <h1>Your Personal AI Music Curator</h1>
+                        <p>Describe your mood, vibe, or what you're feeling — and let AI craft the perfect playlist for you.</p>
+                        <a href="/chat-demo" class="btn btn-large btn-demo" onclick="event.preventDefault(); enterDemoMode();">
+                            <i class="fas fa-rocket"></i> Try Demo — No Login Required
+                        </a>
+                        <p class="small-text">Powered by LLM + Mock Track Database</p>
+                        <p class="demo-note">
+                            This is a demo version. Tracks are curated samples based on AI mood analysis.
+                            <br>
+                            <a href="https://github.com/adul69/muse-ai" target="_blank" class="demo-link">View on GitHub →</a>
+                        </p>
                     </div>
                 </div>
             {% else %}
