@@ -208,7 +208,7 @@ class MockProvider(LLMProvider):
     def chat(self, system_prompt: str, user_message: str) -> str:
         msg = user_message.lower()
 
-        if any(w in msg for w in ["sad", "breakup", "cry", "heartbreak", "depressed"]):
+        if any(w in msg for w in ["sad", "breakup", "break up", "broke up", "cry", "crying", "heartbreak", "heart broken", "heartbroken", "depressed", "depressing", "depression", "upset", "lonely", "miss her", "miss him", "missing you", "melancholy", "gloomy", "somber", "sorrow", "grief", "mourning", "tear", "tears", "weep"]):
             return json.dumps({
                 "mood_description": "Melancholic and heartbroken",
                 "target_energy": 0.25,
@@ -224,7 +224,7 @@ class MockProvider(LLMProvider):
                 "reasoning": "Low energy and valence with acoustic focus matches the melancholic mood."
             })
 
-        if any(w in msg for w in ["party", "dance", "club", "hype"]):
+        if any(w in msg for w in ["party", "dance", "club", "hype", "turn up", "lit", "turnup", "celebrate", "celebration", "birthday", "weekend vibes", "night out"]):
             return json.dumps({
                 "mood_description": "High-energy party vibes",
                 "target_energy": 0.95,
@@ -232,44 +232,108 @@ class MockProvider(LLMProvider):
                 "target_danceability": 0.9,
                 "target_tempo": 130,
                 "target_acousticness": 0.1,
-                "target_instrumentalness": 0.1,
-                "genres": ["edm", "dance", "pop", "house"],
+                "target_instrumentalness": 0.0,
+                "genres": ["edm", "dance", "house", "pop", "party"],
                 "artist_references": ["David Guetta", "Calvin Harris"],
                 "track_count": 25,
-                "playlist_name_suggestion": "Party All Night 🎉",
-                "reasoning": "Maximum energy and danceability for a party atmosphere."
+                "playlist_name_suggestion": "Neon Nights 🎉",
+                "reasoning": "High energy, valence, and danceability for an electrifying party atmosphere."
             })
 
-        if any(w in msg for w in ["focus", "study", "work", "concentrate", "coding"]):
+        if any(w in msg for w in ["focus", "concentrat", "study", "work", "deep", "coding", "programming", "productive", "productivity", "revision", "exam", "homework", "reading", "writing", "essay", "thesis"]):
             return json.dumps({
                 "mood_description": "Deep focus and concentration",
-                "target_energy": 0.3,
+                "target_energy": 0.35,
                 "target_valence": 0.5,
                 "target_danceability": 0.2,
                 "target_tempo": 90,
                 "target_acousticness": 0.6,
                 "target_instrumentalness": 0.85,
-                "genres": ["ambient", "classical", "study", "piano"],
+                "genres": ["classical", "ambient", "piano", "study", "lo-fi"],
                 "artist_references": ["Ludovico Einaudi", "Hans Zimmer"],
-                "track_count": 30,
-                "playlist_name_suggestion": "Deep Focus Mode 🧠",
-                "reasoning": "Low energy, high instrumentalness, and calm genres support concentration."
+                "track_count": 20,
+                "playlist_name_suggestion": "Flow State 🧠",
+                "reasoning": "Low danceability, high instrumentalness, moderate energy for sustained focus."
             })
 
-        # Default: chill
+        if any(w in msg for w in ["sleep", "sleepy", "tired", "bed", "rest", "dream", "dreaming", "nap", "rainy", "cozy", "lo-fi", "chill", "relax", "relaxing", "calm", "peaceful", "tranquil", "meditation", "yoga", "spa", "ambient"]):
+            return json.dumps({
+                "mood_description": "Relaxed and chill",
+                "target_energy": 0.2,
+                "target_valence": 0.55,
+                "target_danceability": 0.2,
+                "target_tempo": 70,
+                "target_acousticness": 0.8,
+                "target_instrumentalness": 0.6,
+                "genres": ["ambient", "sleep", "piano", "lo-fi", "chill"],
+                "artist_references": ["Nujabes", "J Dilla"],
+                "track_count": 15,
+                "playlist_name_suggestion": "Cozy Corners 🌧️",
+                "reasoning": "Very low energy with high acousticness for a peaceful, relaxing vibe."
+            })
+
+        if any(w in msg for w in ["happy", "joy", "joyful", "cheerful", "uplift", "uplifting", "smile", "smiling", "good mood", "feel great", "feeling good", "blessed", "grateful", "excited", "enthusiastic", "optimistic", "positive", "sunny"]):
+            return json.dumps({
+                "mood_description": "Happy and uplifting",
+                "target_energy": 0.75,
+                "target_valence": 0.9,
+                "target_danceability": 0.7,
+                "target_tempo": 120,
+                "target_acousticness": 0.3,
+                "target_instrumentalness": 0.1,
+                "genres": ["pop", "funk", "disco", "happy", "soul"],
+                "artist_references": ["Pharrell Williams", "Bruno Mars"],
+                "track_count": 20,
+                "playlist_name_suggestion": "Sunshine Vibes ☀️",
+                "reasoning": "High valence and energy with danceable pop-funk for a feel-good mood."
+            })
+
+        if any(w in msg for w in ["angry", "mad", "anger", "rage", "raging", "furious", "aggressive", "aggression", "hate", "hatred", "frustrated", "frustration", "annoyed", "irritated", "pissed", "revenge", "resentment", "bitter"]):
+            return json.dumps({
+                "mood_description": "Intense and aggressive",
+                "target_energy": 0.9,
+                "target_valence": 0.2,
+                "target_danceability": 0.5,
+                "target_tempo": 150,
+                "target_acousticness": 0.1,
+                "target_instrumentalness": 0.3,
+                "genres": ["metal", "rock", "hardcore", "industrial", "alternative"],
+                "artist_references": ["Rage Against the Machine", "Metallica"],
+                "track_count": 20,
+                "playlist_name_suggestion": "Rage Room 🔥",
+                "reasoning": "Very high energy, low valence, aggressive genres to channel intense emotions."
+            })
+
+        if any(w in msg for w in ["energetic", "energy", "pump", "pumped", "workout", "gym", "power", "powerful", "run", "running", "exercise", "fitness", "training", "cardio", "lift", "lifting", "weights", "motivation", "motivated", "hype", "amped", "fired up"]):
+            return json.dumps({
+                "mood_description": "Energetic and motivating",
+                "target_energy": 0.92,
+                "target_valence": 0.7,
+                "target_danceability": 0.75,
+                "target_tempo": 140,
+                "target_acousticness": 0.1,
+                "target_instrumentalness": 0.2,
+                "genres": ["edm", "hip-hop", "rock", "work-out", "pop"],
+                "artist_references": ["Eminem", "The Weeknd"],
+                "track_count": 25,
+                "playlist_name_suggestion": "Beast Mode 💪",
+                "reasoning": "High tempo and energy with motivating genres for peak performance."
+            })
+
+        # Default fallback
         return json.dumps({
-            "mood_description": "Relaxed and chill",
-            "target_energy": 0.4,
-            "target_valence": 0.55,
-            "target_danceability": 0.45,
+            "mood_description": "Balanced and versatile",
+            "target_energy": 0.5,
+            "target_valence": 0.5,
+            "target_danceability": 0.5,
             "target_tempo": 100,
             "target_acousticness": 0.5,
             "target_instrumentalness": 0.3,
-            "genres": ["chill", "indie", "acoustic", "lo-fi"],
-            "artist_references": ["Mac DeMarco", "Frank Ocean"],
+            "genres": ["pop", "indie", "alternative"],
+            "artist_references": [],
             "track_count": 20,
-            "playlist_name_suggestion": "Chill Vibes Only 😌",
-            "reasoning": "Balanced energy and valence with chill genres for relaxation."
+            "playlist_name_suggestion": "MuseAI Mix ✨",
+            "reasoning": "Balanced profile that works across moods and activities."
         })
 
 

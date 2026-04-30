@@ -176,6 +176,11 @@ function playPreview(url, trackId) {
 // ─── Result Panel Renderer ──────────────────────────────
 
 function renderResult(data) {
+    // Always get fresh element references (for demo mode compatibility)
+    const rp = document.getElementById('resultPanel');
+    const rc = document.getElementById('resultContent');
+    if (!rp || !rc) return; // Silently skip if elements don't exist
+
     const analysis = data.llm_analysis;
     const playlist = data.playlist;
     const tracks = data.tracks;
@@ -242,8 +247,8 @@ function renderResult(data) {
         </div>
     `;
 
-    resultContent.innerHTML = analysisHtml + playlistHtml + tracksHtml;
-    resultPanel.classList.remove('hidden');
+    rc.innerHTML = analysisHtml + playlistHtml + tracksHtml;
+    rp.classList.remove('hidden');
 }
 
 // ─── Form Handler ───────────────────────────────────────
